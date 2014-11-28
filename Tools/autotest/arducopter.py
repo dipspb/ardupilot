@@ -15,9 +15,11 @@ import random
 # get location of scripts
 testdir=os.path.dirname(os.path.realpath(__file__))
 
-FRAME='+'
+FRAME='X'
 TARGET='sitl'
-HOME=mavutil.location(-35.362938,149.165085,584,270)
+# 60.196085, 30.322801
+# HOME=mavutil.location(-35.362938,149.165085,584,270)
+HOME=mavutil.location(60.196085,30.322801,70,270)
 AVCHOME=mavutil.location(40.072842,-105.230575,1586,0)
 
 homeloc = None
