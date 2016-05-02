@@ -12,11 +12,13 @@
  # define AP_BATT_VOLT_PIN                  0       // Battery voltage on A0
  # define AP_BATT_CURR_PIN                  1       // Battery current on A1
  # define AP_BATT_VOLTDIVIDER_DEFAULT       3.56f   // on-board APM1 voltage divider with a 3.9kOhm resistor
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  0
 #elif CONFIG_HAL_BOARD == HAL_BOARD_APM2
  # define AP_BATT_VOLT_PIN                  13      // APM2.5/2.6 with 3dr power module
  # define AP_BATT_CURR_PIN                  12
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif CONFIG_HAL_BOARD == HAL_BOARD_FLYMAPLE
 // Flymaple board pin 20 is connected to the external battery supply
@@ -26,23 +28,27 @@
  # define AP_BATT_VOLT_PIN                  20
  # define AP_BATT_CURR_PIN                  19
  # define AP_BATT_VOLTDIVIDER_DEFAULT       5.70588f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif CONFIG_HAL_BOARD == HAL_BOARD_PX4 && defined(CONFIG_ARCH_BOARD_PX4FMU_V1)
  // px4
  # define AP_BATT_VOLT_PIN                  100
  # define AP_BATT_CURR_PIN                  101
  # define AP_BATT_VOLTDIVIDER_DEFAULT       1.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif CONFIG_HAL_BOARD == HAL_BOARD_PX4 && defined(CONFIG_ARCH_BOARD_PX4FMU_V2)
  // pixhawk
  # define AP_BATT_VOLT_PIN                  2
  # define AP_BATT_CURR_PIN                  3
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif CONFIG_HAL_BOARD == HAL_BOARD_SITL
  # define AP_BATT_VOLT_PIN                  13
  # define AP_BATT_CURR_PIN                  12
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 
 #elif CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN
@@ -50,27 +56,32 @@
  # define AP_BATT_VOLT_PIN                  10
  # define AP_BATT_CURR_PIN                  11
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif defined(CONFIG_ARCH_BOARD_VRUBRAIN_V51)
  # define AP_BATT_VOLT_PIN                  10
  # define AP_BATT_CURR_PIN                  -1
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #elif defined(CONFIG_ARCH_BOARD_VRUBRAIN_V52)
  # define AP_BATT_VOLT_PIN                  10
  # define AP_BATT_CURR_PIN                  1
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #endif
 #elif CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN && defined(CONFIG_ARCH_BOARD_VRHERO_V10)
  # define AP_BATT_VOLT_PIN                  100
  # define AP_BATT_CURR_PIN                  101
  # define AP_BATT_VOLTDIVIDER_DEFAULT       1.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #else
  # define AP_BATT_VOLT_PIN                  -1
  # define AP_BATT_CURR_PIN                  -1
  # define AP_BATT_VOLTDIVIDER_DEFAULT       10.1f
+ # define AP_BAT_VOLT_FIX_PER_AMP_DEFAULT   0
  # define AP_BATT_CURR_AMP_PERVOLT_DEFAULT  17.0f
 #endif
 

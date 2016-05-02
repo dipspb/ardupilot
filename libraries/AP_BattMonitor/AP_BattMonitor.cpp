@@ -57,7 +57,14 @@ const AP_Param::GroupInfo AP_BattMonitor::var_info[] PROGMEM = {
     AP_GROUPINFO("_CAPACITY", 6, AP_BattMonitor, _pack_capacity[0], AP_BATT_CAPACITY_DEFAULT),
 
     // 7 & 8 were used for VOLT2_PIN and VOLT2_MULT
-    // 9..10 left for future expansion
+
+    // @Param: _VFIX_PERAMP
+    // @DisplayName: Battery voltage measurement fix per amper on load
+    // @Description: Used to fix a measured voltage value on load. Power module voltage sensor may provide non-linear measurement. Use 0.0 value as no fix applied.
+    // @User: Advanced
+    AP_GROUPINFO("_VFIX_PERAMP", 9, AP_BattMonitor, _volt_fix_per_amp[0], AP_BAT_VOLT_FIX_PER_AMP_DEFAULT),
+
+    // 10 left for future expansion
 
 #if AP_BATT_MONITOR_MAX_INSTANCES > 1
     // @Param: 2_MONITOR
@@ -108,6 +115,12 @@ const AP_Param::GroupInfo AP_BattMonitor::var_info[] PROGMEM = {
     // @Increment: 50
     // @User: Standard
     AP_GROUPINFO("2_CAPACITY", 17, AP_BattMonitor, _pack_capacity[1], AP_BATT_CAPACITY_DEFAULT),
+
+    // @Param: 2_VFIX_PERAMP
+    // @DisplayName: Battery voltage measurement fix per amper on load
+    // @Description: Used to fix a measured voltage value on load. Power module voltage sensor may provide non-linear measurement. Use 0.0 value as no fix applied.
+    // @User: Advanced
+    AP_GROUPINFO("2_VFIX_PERAMP", 18, AP_BattMonitor, _volt_fix_per_amp[1], AP_BAT_VOLT_FIX_PER_AMP_DEFAULT),
 
 #endif // AP_BATT_MONITOR_MAX_INSTANCES > 1
 

@@ -48,5 +48,8 @@ AP_BattMonitor_Analog::read()
 
         // record time
         _state.last_time_micros = tnow;
+
+        // apply fix to voltage value to eliminate non-linearity in measurement
+        _state.voltage -= _state.current_total_mah * _mon._volt_fix_per_amp[_state.instance];
     }
 }
