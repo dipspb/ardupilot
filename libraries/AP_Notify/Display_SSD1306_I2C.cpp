@@ -19,7 +19,12 @@
 #include <AP_HAL/AP_HAL.h>
 #include <AP_HAL/I2CDevice.h>
 
+#if  CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BBBMINI
 #define SSD1306_I2C_BUS 2
+#else
+#define SSD1306_I2C_BUS 1
+#endif
+
 #define SSD1306_I2C_ADDR 0x3C    // default I2C bus address
 
 static const AP_HAL::HAL& hal = AP_HAL::get_HAL();
@@ -37,6 +42,7 @@ bool Display_SSD1306_I2C::hw_init()
                           0xAF, 0x21, 0, 127, 0x22, 0, 7 } };
 
     _dev = std::move(hal.i2c_mgr->get_device(SSD1306_I2C_BUS, SSD1306_I2C_ADDR));
+    memset(_displaybuffer, 0, SSD1306_ROWS * SSD1306_COLUMNS_PER_PAGE);
 
     // take i2c bus sempahore
     if (!_dev || !_dev->get_semaphore()->take(HAL_SEMAPHORE_BLOCK_FOREVER)) {
@@ -76,17 +82,20 @@ bool Display_SSD1306_I2C::_timer()
 
     struct PACKED {
         uint8_t reg;
-        uint8_t db[SSD1306_ROWS];
+        uint8_t db[SSD1306_ROWS/2];
     } display_buffer = { 0x40, {} };
 
     // write buffer to display
     for (uint8_t i = 0; i < (SSD1306_COLUMNS / SSD1306_COLUMNS_PER_PAGE); i++) {
         command.cmd[4] = i;
-
         _dev->transfer((uint8_t *)&command, sizeof(command), nullptr, 0);
 
-        memcpy(&display_buffer.db[0], &_displaybuffer[i * SSD1306_ROWS], SSD1306_ROWS);
-        _dev->transfer((uint8_t *)&display_buffer, sizeof(display_buffer), nullptr, 0);
+        memcpy(&display_buffer.db[0], &_displaybuffer[i * SSD1306_ROWS], SSD1306_ROWS/2);
+        _dev->transfer((uint8_t *)&display_buffer, SSD1306_ROWS/2 + 1, nullptr, 0);
+
+        memcpy(&display_buffer.db[0], &_displaybuffer[i * SSD1306_ROWS + SSD1306_ROWS/2 ], SSD1306_ROWS/2);
+        _dev->transfer((uint8_t *)&display_buffer, SSD1306_ROWS/2 + 1, nullptr, 0);
+
     }
 
     return true;
@@ -114,4 +123,9 @@ bool Display_SSD1306_I2C::clear_pixel(uint16_t x, uint16_t y)
     _displaybuffer[x + (y / 8 * SSD1306_ROWS)] &= ~(1 << (y % 8));
 
     return true;
+}
+bool Display_SSD1306_I2C::clear_screen()
+{
+     memset(_displaybuffer, 0, SSD1306_ROWS * SSD1306_COLUMNS_PER_PAGE);
+     return true;
 }
