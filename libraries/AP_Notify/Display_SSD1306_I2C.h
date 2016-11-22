@@ -3,9 +3,9 @@
 #include "Display.h"
 #include <AP_HAL/I2CDevice.h>
 
-#define SSD1306_ROWS 128		    // display rows
-#define SSD1306_COLUMNS 64		    // display columns
-#define SSD1306_COLUMNS_PER_PAGE 8
+#define SSD1306_COLUMNS 128		// display columns
+#define SSD1306_ROWS 64		    // display rows
+#define SSD1306_ROWS_PER_PAGE 8
 
 class Display_SSD1306_I2C: public Display {
 public:
@@ -17,7 +17,7 @@ public:
 
 private:
     AP_HAL::OwnPtr<AP_HAL::I2CDevice> _dev;
-    uint8_t _displaybuffer[SSD1306_ROWS * SSD1306_COLUMNS_PER_PAGE];
+    uint8_t _displaybuffer[SSD1306_COLUMNS * SSD1306_ROWS_PER_PAGE];
     bool _need_hw_update;
     bool _timer(void);
 };
