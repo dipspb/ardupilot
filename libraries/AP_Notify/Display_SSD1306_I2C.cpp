@@ -19,12 +19,6 @@
 #include <AP_HAL/AP_HAL.h>
 #include <AP_HAL/I2CDevice.h>
 
-#if  CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BBBMINI
-#define SSD1306_I2C_BUS 2
-#else
-#define SSD1306_I2C_BUS 1
-#endif
-
 #define SSD1306_I2C_ADDR 0x3C    // default I2C bus address
 
 static const AP_HAL::HAL& hal = AP_HAL::get_HAL();
@@ -63,7 +57,7 @@ bool Display_SSD1306_I2C::hw_init()
             0x22, 0, 7    // +++ Page Address: (== start:0, end:7)
     } };
 
-    _dev = std::move(hal.i2c_mgr->get_device(SSD1306_I2C_BUS, SSD1306_I2C_ADDR));
+    _dev = std::move(hal.i2c_mgr->get_device(OLED_I2C_BUS, SSD1306_I2C_ADDR));
     memset(_displaybuffer, 0, SSD1306_COLUMNS * SSD1306_ROWS_PER_PAGE);
 
     // take i2c bus semaphore
@@ -79,7 +73,7 @@ bool Display_SSD1306_I2C::hw_init()
 
     _need_hw_update = true;
 
-    _dev->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&Display_SSD1306_I2C::_timer, bool));
+    _dev->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&Display_SSD1306_I2C::_update_timer, bool));
 
     return true;
 }
@@ -90,13 +84,13 @@ bool Display_SSD1306_I2C::hw_update()
     return true;
 }
 
-bool Display_SSD1306_I2C::_timer()
+bool Display_SSD1306_I2C::_update_timer()
 {
     if (!_need_hw_update) {
         return true;
     }
     _need_hw_update = false;
-    
+
     struct PACKED {
         uint8_t reg;
         uint8_t cmd[6];
@@ -117,7 +111,6 @@ bool Display_SSD1306_I2C::_timer()
 
         memcpy(&display_buffer.db[0], &_displaybuffer[i * SSD1306_COLUMNS + SSD1306_COLUMNS/2 ], SSD1306_COLUMNS/2);
         _dev->transfer((uint8_t *)&display_buffer, SSD1306_COLUMNS/2 + 1, nullptr, 0);
-
     }
 
     return true;

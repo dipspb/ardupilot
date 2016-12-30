@@ -13,38 +13,31 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Display_OLED_I2C.h"
+#include "Display_SH1106_I2C.h"
+#include "Display_SSD1306_I2C.h"
 
 #include <utility>
 
-//#include <AP_HAL/AP_HAL.h>
-//#include <AP_HAL/I2CDevice.h>
+#include <AP_HAL/AP_HAL.h>
+#include <AP_HAL/I2CDevice.h>
+#include "AP_Notify.h"
 
-bool Display_OLED_I2C::hw_init()
+Display_OLED_I2C* Display_OLED_I2C::getInstance()
 {
-    if (Display_SH1106_I2C::hw_autodetect()) {
-        _display = new Display_SH1106_I2C();
-    } else {
-        _display = new Display_SSD1306_I2C();
+    if (nullptr == _instance.get()) {
+        switch (pNotify->_display_type) {
+            case DISPLAY_SSD1306:
+                _instance = new Display_SSD1306_I2C();
+                break;
+
+            case DISPLAY_SH1106:
+                _instance = new Display_SH1106_I2C();
+                break;
+
+            case DISPLAY_OFF:
+            default:
+                break;
+        }
     }
-    _initialized = true;
-    return _display->hw_init();
-}
-
-bool Display_OLED_I2C::hw_update()
-{
-    return _initialized && _display->hw_update();
-}
-
-bool Display_OLED_I2C::set_pixel(uint16_t x, uint16_t y)
-{
-    return _initialized && _display->set_pixel(x, y);
-}
-
-bool Display_OLED_I2C::clear_pixel(uint16_t x, uint16_t y)
-{
-    return _initialized && _display->clear_pixel(x, y);
-}
-bool Display_OLED_I2C::clear_screen()
-{
-    return _initialized && _display->hw_init();
+    return _instance.get();
 }

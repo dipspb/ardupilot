@@ -40,9 +40,15 @@
 
 #define NOTIFY_TEXT_BUFFER_SIZE 51
 
+//Type of on-board display
+#define DISPLAY_OFF     0
+#define DISPLAY_SSD1306 1
+#define DISPLAY_SH1106  2
+
 class AP_Notify
 {
-    friend class RGBLed;    // RGBLed needs access to notify parameters
+    friend class RGBLed;            // RGBLed needs access to notify parameters
+    friend class Display_OLED_I2C;  // Display_OLED_I2C needs access to notify parameters
 public:
     // Constructor
     AP_Notify();
@@ -127,5 +133,6 @@ private:
     AP_Int8 _rgb_led_brightness;
     AP_Int8 _rgb_led_override;
     AP_Int8 _buzzer_enable;
+    AP_Int8 _display_type;
 
 };

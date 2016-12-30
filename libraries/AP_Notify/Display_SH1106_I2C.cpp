@@ -19,72 +19,9 @@
 #include <AP_HAL/AP_HAL.h>
 #include <AP_HAL/I2CDevice.h>
 
-#if  CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BBBMINI
-#define SH1106_I2C_BUS 2
-#else
-#define SH1106_I2C_BUS 1
-#endif
-
 #define SH1106_I2C_ADDR 0x3C    // default I2C bus address
 
 static const AP_HAL::HAL& hal = AP_HAL::get_HAL();
-
-bool Display_SH1106_I2C::hw_autodetect()
-{
-    struct {
-        uint8_t reg;
-        uint8_t cmd[1];
-    } disp_off_on = { 0x0,  {0xAE} };
-
-    struct {
-        uint8_t reg;
-        uint8_t value[1];
-    } status = { 0x0,  {0x0} };
-
-    bool is_sh1106 = true;
-
-    AP_HAL::OwnPtr<AP_HAL::I2CDevice> dev = std::move(hal.i2c_mgr->getdevice(SH1106_I2C_BUS, SH1106_I2C_ADDR));
-
-    // take i2c bus semaphore
-    if (!dev || !dev->get_semaphore()->take(HAL_SEMAPHORE_BLOCK_FOREVER)) {
-        return false;
-    }
-
-    if (true == is_sh1106) {
-        // display OFF
-        disp_off_on.cmd[0] = 0xAE;
-        dev->transfer((uint8_t *)&disp_off_on, sizeof(disp_off_on), nullptr, 0);
-        // read status
-        dev->transfer(nullptr, 0, (uint8_t *)&status, sizeof(status));
-        // Flag value is the opposite of Display ON/OFF command, 1 is OFF
-        is_sh1106 = 0x40 == (status.value & 0x40);
-    }
-
-    if (true == is_sh1106) {
-        // display ON
-        disp_off_on.cmd[0] = 0xAF;
-        dev->transfer((uint8_t *)&disp_off_on, sizeof(disp_off_on), nullptr, 0);
-        // read status
-        dev->transfer(nullptr, 0, (uint8_t *)&status, sizeof(status));
-        // Flag value is the opposite of Display ON/OFF command, 0 is ON
-        is_sh1106 = 0x00 == (status.value & 0x40);
-    }
-
-    if (true == is_sh1106) {
-        // display OFF
-        disp_off_on.cmd[0] = 0xAE;
-        dev->transfer((uint8_t *)&disp_off_on, sizeof(disp_off_on), nullptr, 0);
-        // read status
-        dev->transfer(nullptr, 0, (uint8_t *)&status, sizeof(status));
-        // Flag value is the opposite of Display ON/OFF command, 1 is OFF
-        is_sh1106 = 0x40 == (status.value & 0x40);
-    }
-
-    // give back i2c semaphore
-    dev->get_semaphore()->give();
-
-    return is_sh1106;
-}
 
 bool Display_SH1106_I2C::hw_init()
 {
@@ -111,10 +48,10 @@ bool Display_SH1106_I2C::hw_init()
             0x02, 0x10    // Column Address
     } };
 
-    _dev = std::move(hal.i2c_mgr->get_device(SH1106_I2C_BUS, SH1106_I2C_ADDR));
+    _dev = std::move(hal.i2c_mgr->get_device(OLED_I2C_BUS, SH1106_I2C_ADDR));
     memset(_displaybuffer, 0, SH1106_COLUMNS * SH1106_ROWS_PER_PAGE);
 
-    // take i2c bus sempahore
+    // take i2c bus semaphore
     if (!_dev || !_dev->get_semaphore()->take(HAL_SEMAPHORE_BLOCK_FOREVER)) {
         return false;
     }
@@ -127,7 +64,7 @@ bool Display_SH1106_I2C::hw_init()
 
     _need_hw_update = true;
 
-    _dev->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&Display_SH1106_I2C::_timer, bool));
+    _dev->register_periodic_callback(20000, FUNCTOR_BIND_MEMBER(&Display_SH1106_I2C::_update_timer, bool));
 
     return true;
 }
@@ -138,13 +75,13 @@ bool Display_SH1106_I2C::hw_update()
     return true;
 }
 
-bool Display_SH1106_I2C::_timer()
+bool Display_SH1106_I2C::_update_timer()
 {
     if (!_need_hw_update) {
         return true;
     }
     _need_hw_update = false;
-    
+
     struct PACKED {
         uint8_t reg;
         uint8_t cmd[3];
@@ -165,7 +102,6 @@ bool Display_SH1106_I2C::_timer()
 
         memcpy(&display_buffer.db[0], &_displaybuffer[i * SH1106_COLUMNS + SH1106_COLUMNS/2 ], SH1106_COLUMNS/2);
         _dev->transfer((uint8_t *)&display_buffer, SH1106_COLUMNS/2 + 1, nullptr, 0);
-
     }
 
     return true;
