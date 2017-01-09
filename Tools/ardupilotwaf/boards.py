@@ -469,15 +469,15 @@ class f4by(Board):
     toolchain = 'arm-none-eabi'
 
     def __init__(self):
-        self.px4_version = None
+        self.f4by_version = None
         self.use_px4io = True
 
     def configure(self, cfg):
-        if not self.px4_version:
+        if not self.f4by_version:
             cfg.fatal('configure: f4by: version required')
 
         super(f4by, self).configure(cfg)
-        cfg.load('px4')
+        cfg.load('f4by')
 
     def configure_env(self, cfg, env):
         super(f4by, self).configure_env(cfg, env)
@@ -505,8 +505,8 @@ class f4by(Board):
             'uavcan',
         ]
 
-        env.PX4_VERSION = self.px4_version
-        env.PX4_USE_PX4IO = True if self.use_px4io else False
+        env.F4BY_VERSION = self.f4by_version
+        env.F4BY_USE_PX4IO = True if self.use_px4io else False
 
         env.AP_PROGRAM_AS_STLIB = True
 
@@ -514,14 +514,16 @@ class f4by(Board):
         super(f4by, self).build(bld)
         bld.ap_version_append_str('NUTTX_GIT_VERSION', bld.git_submodule_head_hash('PX4NuttX', short=True))
         bld.ap_version_append_str('PX4_GIT_VERSION', bld.git_submodule_head_hash('PX4Firmware', short=True))
-        bld.load('px4')
+        bld.load('f4by')
 
-
-class f4by_v1(f4by):
-    name = 'f4by-v1'
+# f4by  V2 & V3
+class f4by_v2(f4by):
+    name = 'f4by-v2'
     def __init__(self):
-        super(f4by_v1, self).__init__()
-        self.px4_version = '2'
+        super(f4by_v2, self).__init__()
+        self.f4by_version = '2'
+        self.use_px4io = False
+        
 
 
 # class f4by_v1(px4):
