@@ -1,7 +1,6 @@
 #pragma once
 
 #include <AP_HAL/AP_HAL.h>
-#include "AP_HAL_F4BY_Namespace.h"
 #include <systemlib/perf_counter.h>
 
 #define F4BY_STORAGE_SIZE HAL_STORAGE_SIZE
@@ -10,7 +9,9 @@
 #define F4BY_STORAGE_LINE_SIZE (1<<F4BY_STORAGE_LINE_SHIFT)
 #define F4BY_STORAGE_NUM_LINES (F4BY_STORAGE_SIZE/F4BY_STORAGE_LINE_SIZE)
 
-class F4BY::F4BYStorage : public AP_HAL::Storage {
+namespace F4BY {
+
+class F4BYStorage : public AP_HAL::Storage {
 public:
     F4BYStorage();
 
@@ -40,3 +41,5 @@ private:
 #endif
     void bus_lock(bool lock);
 };
+
+}

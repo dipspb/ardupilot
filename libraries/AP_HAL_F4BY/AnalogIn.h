@@ -18,9 +18,11 @@
 #define F4BY_ANALOG_ORB_SERVO_VRSSI_PIN         103
 #endif
 
-class F4BY::F4BYAnalogSource : public AP_HAL::AnalogSource {
+namespace F4BY {
+
+class F4BYAnalogSource : public AP_HAL::AnalogSource {
 public:
-    friend class F4BY::F4BYAnalogIn;
+    friend class F4BYAnalogIn;
     F4BYAnalogSource(int16_t pin, float initial_value);
     float read_average();
     float read_latest();
@@ -50,7 +52,7 @@ private:
     float _pin_scaler();
 };
 
-class F4BY::F4BYAnalogIn : public AP_HAL::AnalogIn {
+class F4BYAnalogIn : public AP_HAL::AnalogIn {
 public:
     F4BYAnalogIn();
     void init();
@@ -80,3 +82,5 @@ private:
 
     void next_stop_pin(void);
 };
+
+}

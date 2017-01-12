@@ -6,7 +6,9 @@
 #include "AP_HAL_F4BY.h"
 #include <pthread.h>
 
-class F4BY::Semaphore : public AP_HAL::Semaphore {
+namespace F4BY {
+
+class Semaphore : public AP_HAL::Semaphore {
 public:
     Semaphore() {
         pthread_mutex_init(&_lock, NULL);
@@ -17,4 +19,6 @@ public:
 private:
     pthread_mutex_t _lock;
 };
+}
+
 #endif // CONFIG_HAL_BOARD

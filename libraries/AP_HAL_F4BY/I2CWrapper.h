@@ -11,7 +11,9 @@ extern const AP_HAL::HAL& hal;
 /*
   wrapper class for I2C to expose protected functions from PX4Firmware
  */
-class F4BY::F4BY_I2C : public device::I2C {
+namespace F4BY {
+
+class F4BY_I2C : public device::I2C {
 public:
     F4BY_I2C(uint8_t bus) : I2C(devname, devpath, bus, 0, 400000UL) { }
     bool do_transfer(uint8_t address, const uint8_t *send, uint32_t send_len, uint8_t *recv, uint32_t recv_len);
@@ -24,5 +26,6 @@ private:
     char devpath[14];
 };
 
+}
 
 #endif // CONFIG_HAL_BOARD

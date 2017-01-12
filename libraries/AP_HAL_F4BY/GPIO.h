@@ -25,7 +25,9 @@
  # define HAL_GPIO_LED_OFF          HIGH
 #endif
 
-class F4BY::F4BYGPIO : public AP_HAL::GPIO {
+namespace F4BY {
+
+class F4BYGPIO : public AP_HAL::GPIO {
 public:
     F4BYGPIO();
     void    init();
@@ -55,7 +57,7 @@ private:
     bool _usb_connected = false;
 };
 
-class F4BY::F4BYDigitalSource : public AP_HAL::DigitalSource {
+class F4BYDigitalSource : public AP_HAL::DigitalSource {
 public:
     F4BYDigitalSource(uint8_t v);
     void    mode(uint8_t output);
@@ -65,3 +67,5 @@ public:
 private:
     uint8_t _v;
 };
+
+}

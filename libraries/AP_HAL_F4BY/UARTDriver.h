@@ -3,7 +3,9 @@
 #include "AP_HAL_F4BY.h"
 #include <systemlib/perf_counter.h>
 
-class F4BY::F4BYUARTDriver : public AP_HAL::UARTDriver {
+namespace F4BY {
+
+class F4BYUARTDriver : public AP_HAL::UARTDriver {
 public:
     F4BYUARTDriver(const char *devpath, const char *perf_name);
     /* F4BY implementations of UARTDriver virtual methods */
@@ -78,3 +80,5 @@ private:
     pid_t _uart_owner_pid;
 
 };
+
+}

@@ -5,7 +5,6 @@
 #if CONFIG_HAL_BOARD == HAL_BOARD_F4BY
 
 #include "AP_HAL_F4BY.h"
-#include "AP_HAL_F4BY_Namespace.h"
 #include "HAL_F4BY_Class.h"
 #include "Scheduler.h"
 #include "UARTDriver.h"

@@ -7,7 +7,9 @@
 
 #define F4BY_NUM_OUTPUT_CHANNELS 16
 
-class F4BY::F4BYRCOutput : public AP_HAL::RCOutput
+namespace F4BY {
+
+class F4BYRCOutput : public AP_HAL::RCOutput 
 {
 public:
     void     init() override;
@@ -33,7 +35,7 @@ public:
     void push();
 
     void set_output_mode(enum output_mode mode) override;
-
+    
     void _timer_tick(void);
     bool enable_sbus_out(uint16_t rate_hz) override;
 
@@ -74,3 +76,5 @@ private:
     uint32_t _safety_state_request_last_ms = 0;
     void force_safety_pending_requests(void);
 };
+
+}

@@ -10,7 +10,9 @@
 #define RC_INPUT_MAX_CHANNELS 18
 #endif
 
-class F4BY::F4BYRCInput : public AP_HAL::RCInput {
+namespace F4BY {
+
+class F4BYRCInput : public AP_HAL::RCInput {
 public:
     void init();
     bool new_input();
@@ -36,3 +38,5 @@ private:
     perf_counter_t _perf_rcin;
     pthread_mutex_t rcin_mutex;
 };
+
+}
