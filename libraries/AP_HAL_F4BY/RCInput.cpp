@@ -12,7 +12,7 @@ using namespace F4BY;
 
 extern const AP_HAL::HAL& hal;
 
-void F4BYRCInput::init()
+void RCInput::init()
 {
 	_perf_rcin = perf_alloc(PC_ELAPSED, "APM_rcin");
 	_rc_sub = orb_subscribe(ORB_ID(input_rc));
@@ -23,7 +23,7 @@ void F4BYRCInput::init()
         pthread_mutex_init(&rcin_mutex, NULL);
 }
 
-bool F4BYRCInput::new_input()
+bool RCInput::new_input()
 {
     pthread_mutex_lock(&rcin_mutex);
     bool valid = _rcin.timestamp_last_signal != _last_read || _override_valid;
@@ -33,7 +33,7 @@ bool F4BYRCInput::new_input()
     return valid;
 }
 
-uint8_t F4BYRCInput::num_channels()
+uint8_t RCInput::num_channels()
 {
     pthread_mutex_lock(&rcin_mutex);
     uint8_t n = _rcin.channel_count;
@@ -41,7 +41,7 @@ uint8_t F4BYRCInput::num_channels()
     return n;
 }
 
-uint16_t F4BYRCInput::read(uint8_t ch)
+uint16_t RCInput::read(uint8_t ch)
 {
 	if (ch >= RC_INPUT_MAX_CHANNELS) {
 		return 0;
@@ -61,7 +61,7 @@ uint16_t F4BYRCInput::read(uint8_t ch)
         return v;
 }
 
-uint8_t F4BYRCInput::read(uint16_t* periods, uint8_t len)
+uint8_t RCInput::read(uint16_t* periods, uint8_t len)
 {
 	if (len > RC_INPUT_MAX_CHANNELS) {
 		len = RC_INPUT_MAX_CHANNELS;
@@ -72,7 +72,7 @@ uint8_t F4BYRCInput::read(uint16_t* periods, uint8_t len)
 	return len;
 }
 
-bool F4BYRCInput::set_overrides(int16_t *overrides, uint8_t len)
+bool RCInput::set_overrides(int16_t *overrides, uint8_t len)
 {
 	bool res = false;
 	for (uint8_t i = 0; i < len; i++) {
@@ -81,7 +81,7 @@ bool F4BYRCInput::set_overrides(int16_t *overrides, uint8_t len)
 	return res;
 }
 
-bool F4BYRCInput::set_override(uint8_t channel, int16_t override) {
+bool RCInput::set_override(uint8_t channel, int16_t override) {
 	if (override < 0) {
 		return false; /* -1: no change. */
 	}
@@ -96,14 +96,14 @@ bool F4BYRCInput::set_override(uint8_t channel, int16_t override) {
 	return false;
 }
 
-void F4BYRCInput::clear_overrides()
+void RCInput::clear_overrides()
 {
 	for (uint8_t i = 0; i < RC_INPUT_MAX_CHANNELS; i++) {
 		set_override(i, 0);
 	}
 }
 
-void F4BYRCInput::_timer_tick(void)
+void RCInput::_timer_tick(void)
 {
 	perf_begin(_perf_rcin);
 	bool rc_updated = false;
@@ -117,7 +117,7 @@ void F4BYRCInput::_timer_tick(void)
 	perf_end(_perf_rcin);
 }
 
-bool F4BYRCInput::rc_bind(int dsmMode)
+bool RCInput::rc_bind(int dsmMode)
 {
     int fd = open("/dev/px4io", 0);
     if (fd == -1) {

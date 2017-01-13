@@ -27,9 +27,9 @@
 
 namespace F4BY {
 
-class F4BYGPIO : public AP_HAL::GPIO {
+class GPIO : public AP_HAL::GPIO {
 public:
-    F4BYGPIO();
+    GPIO();
     void    init();
     void    pinMode(uint8_t pin, uint8_t output);
     int8_t  analogPinToDigitalPin(uint8_t pin);

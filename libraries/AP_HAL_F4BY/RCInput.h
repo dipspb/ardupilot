@@ -12,7 +12,7 @@
 
 namespace F4BY {
 
-class F4BYRCInput : public AP_HAL::RCInput {
+class RCInput : public AP_HAL::RCInput {
 public:
     void init();
     bool new_input();

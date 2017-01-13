@@ -11,9 +11,9 @@
 
 namespace F4BY {
 
-class F4BYStorage : public AP_HAL::Storage {
+class Storage : public AP_HAL::Storage {
 public:
-    F4BYStorage();
+    Storage();
 
     void init() {}
     void read_block(void *dst, uint16_t src, size_t n);

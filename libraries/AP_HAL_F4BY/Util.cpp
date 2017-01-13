@@ -25,7 +25,7 @@ extern bool _f4by_thread_should_exit;
 /*
   constructor
  */
-F4BYUtil::F4BYUtil(void) : Util()
+Util::Util(void) : AP_HAL::Util()
 {
     _safety_handle = orb_subscribe(ORB_ID(safety));
 }
@@ -34,9 +34,9 @@ F4BYUtil::F4BYUtil(void) : Util()
 /*
   start an instance of nsh
  */
-bool F4BYUtil::run_debug_shell(AP_HAL::BetterStream *stream)
+bool Util::run_debug_shell(AP_HAL::BetterStream *stream)
 {
-    F4BYUARTDriver *uart = (F4BYUARTDriver *)stream;
+    UARTDriver *uart = (UARTDriver *)stream;
     int fd;
 
     // trigger exit in the other threads. This stops use of the
@@ -71,7 +71,7 @@ bool F4BYUtil::run_debug_shell(AP_HAL::BetterStream *stream)
 /*
   return state of safety switch
  */
-enum F4BYUtil::safety_state F4BYUtil::safety_switch_state(void)
+enum Util::safety_state Util::safety_switch_state(void)
 {
     if (_safety_handle == -1) {
         _safety_handle = orb_subscribe(ORB_ID(safety));
@@ -92,7 +92,7 @@ enum F4BYUtil::safety_state F4BYUtil::safety_switch_state(void)
     return AP_HAL::Util::SAFETY_DISARMED;
 }
 
-void F4BYUtil::set_system_clock(uint64_t time_utc_usec)
+void Util::set_system_clock(uint64_t time_utc_usec)
 {
     timespec ts;
     ts.tv_sec = time_utc_usec/1.0e6f;
@@ -103,7 +103,7 @@ void F4BYUtil::set_system_clock(uint64_t time_utc_usec)
 /*
   display F4BY system identifer - board type and serial number
  */
-bool F4BYUtil::get_system_id(char buf[40])
+bool Util::get_system_id(char buf[40])
 {
     uint8_t serialid[12];
     memset(serialid, 0, sizeof(serialid));
@@ -122,7 +122,7 @@ bool F4BYUtil::get_system_id(char buf[40])
 /**
    how much free memory do we have in bytes.
 */
-uint32_t F4BYUtil::available_memory(void)
+uint32_t Util::available_memory(void)
 {
     return mallinfo().fordblks;
 }
@@ -130,17 +130,17 @@ uint32_t F4BYUtil::available_memory(void)
 /*
   AP_HAL wrapper around F4BY perf counters
  */
-F4BYUtil::perf_counter_t F4BYUtil::perf_alloc(F4BYUtil::perf_counter_type t, const char *name)
+Util::perf_counter_t Util::perf_alloc(Util::perf_counter_type t, const char *name)
 {
     ::perf_counter_type f4by_t;
     switch (t) {
-    case F4BYUtil::PC_COUNT:
+    case Util::PC_COUNT:
         f4by_t = ::PC_COUNT;
         break;
-    case F4BYUtil::PC_ELAPSED:
+    case Util::PC_ELAPSED:
         f4by_t = ::PC_ELAPSED;
         break;
-    case F4BYUtil::PC_INTERVAL:
+    case Util::PC_INTERVAL:
         f4by_t = ::PC_INTERVAL;
         break;
     default:
@@ -149,22 +149,22 @@ F4BYUtil::perf_counter_t F4BYUtil::perf_alloc(F4BYUtil::perf_counter_type t, con
     return (perf_counter_t)::perf_alloc(f4by_t, name);
 }
 
-void F4BYUtil::perf_begin(perf_counter_t h)
+void Util::perf_begin(perf_counter_t h)
 {
     ::perf_begin((::perf_counter_t)h);
 }
 
-void F4BYUtil::perf_end(perf_counter_t h)
+void Util::perf_end(perf_counter_t h)
 {
     ::perf_end((::perf_counter_t)h);
 }
 
-void F4BYUtil::perf_count(perf_counter_t h)
+void Util::perf_count(perf_counter_t h)
 {
     ::perf_count((::perf_counter_t)h);
 }
 
-void F4BYUtil::set_imu_temp(float current)
+void Util::set_imu_temp(float current)
 {
     if (!_heater.target || *_heater.target == -1) {
         return;
@@ -207,7 +207,7 @@ void F4BYUtil::set_imu_temp(float current)
 
 }
 
-void F4BYUtil::set_imu_target_temp(int8_t *target)
+void Util::set_imu_target_temp(int8_t *target)
 {
     _heater.target = target;
 }

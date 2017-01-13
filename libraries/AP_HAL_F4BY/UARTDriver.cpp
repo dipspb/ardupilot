@@ -23,7 +23,7 @@ using namespace F4BY;
 
 extern const AP_HAL::HAL& hal;
 
-F4BYUARTDriver::F4BYUARTDriver(const char *devpath, const char *perf_name) :
+UARTDriver::UARTDriver(const char *devpath, const char *perf_name) :
 	_devpath(devpath),
     _fd(-1),
     _baudrate(57600),
@@ -42,7 +42,7 @@ extern const AP_HAL::HAL& hal;
   this UART driver maps to a serial device in /dev
  */
 
-void F4BYUARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
+void UARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
 {
     if (strcmp(_devpath, "/dev/null") == 0) {
         // leave uninitialised
@@ -135,7 +135,7 @@ void F4BYUARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
     if (_writebuf_size != 0 && _readbuf_size != 0 && _fd != -1) {
         if (!_initialised) {
             if (strcmp(_devpath, "/dev/ttyACM0") == 0) {
-                ((F4BYGPIO *)hal.gpio)->set_usb_connected();
+                ((GPIO *)hal.gpio)->set_usb_connected();
             }
             ::printf("initialised %s OK %u %u\n", _devpath,
                      (unsigned)_writebuf_size, (unsigned)_readbuf_size);
@@ -146,7 +146,7 @@ void F4BYUARTDriver::begin(uint32_t b, uint16_t rxS, uint16_t txS)
 
 }
 
-void F4BYUARTDriver::set_flow_control(enum flow_control fcontrol)
+void UARTDriver::set_flow_control(enum flow_control fcontrol)
 {
 	if (_fd == -1) {
         return;
@@ -168,7 +168,7 @@ void F4BYUARTDriver::set_flow_control(enum flow_control fcontrol)
     _flow_control = fcontrol;
 }
 
-void F4BYUARTDriver::begin(uint32_t b)
+void UARTDriver::begin(uint32_t b)
 {
 	begin(b, 0, 0);
 }
@@ -180,7 +180,7 @@ void F4BYUARTDriver::begin(uint32_t b)
   boot, but cannot be opened until a USB cable is connected and the
   host starts the CDCACM communication.
  */
-void F4BYUARTDriver::try_initialise(void)
+void UARTDriver::try_initialise(void)
 {
     if (_initialised) {
         return;
@@ -195,7 +195,7 @@ void F4BYUARTDriver::try_initialise(void)
 }
 
 
-void F4BYUARTDriver::end()
+void UARTDriver::end()
 {
     _initialised = false;
     while (_in_timer) hal.scheduler->delay(1);
@@ -218,25 +218,25 @@ void F4BYUARTDriver::end()
     _readbuf_tail = 0;
 }
 
-void F4BYUARTDriver::flush() {}
+void UARTDriver::flush() {}
 
-bool F4BYUARTDriver::is_initialized()
+bool UARTDriver::is_initialized()
 {
     try_initialise();
     return _initialised;
 }
 
-void F4BYUARTDriver::set_blocking_writes(bool blocking)
+void UARTDriver::set_blocking_writes(bool blocking)
 {
     _nonblocking_writes = !blocking;
 }
 
-bool F4BYUARTDriver::tx_pending() { return false; }
+bool UARTDriver::tx_pending() { return false; }
 
 /*
   return number of bytes available to be read from the buffer
  */
-uint32_t F4BYUARTDriver::available()
+uint32_t UARTDriver::available()
 {
 	if (!_initialised) {
         try_initialise();
@@ -249,7 +249,7 @@ uint32_t F4BYUARTDriver::available()
 /*
   return number of bytes that can be added to the write buffer
  */
-uint32_t F4BYUARTDriver::txspace()
+uint32_t UARTDriver::txspace()
 {
 	if (!_initialised) {
         try_initialise();
@@ -262,7 +262,7 @@ uint32_t F4BYUARTDriver::txspace()
 /*
   read one byte from the read buffer
  */
-int16_t F4BYUARTDriver::read()
+int16_t UARTDriver::read()
 {
 	uint8_t c;
     if (_uart_owner_pid != getpid()){
@@ -286,7 +286,7 @@ int16_t F4BYUARTDriver::read()
 /*
    write one byte to the buffer
  */
-size_t F4BYUARTDriver::write(uint8_t c)
+size_t UARTDriver::write(uint8_t c)
 {
     if (_uart_owner_pid != getpid()){
         return 0;
@@ -311,7 +311,7 @@ size_t F4BYUARTDriver::write(uint8_t c)
 /*
   write size bytes to the write buffer
  */
-size_t F4BYUARTDriver::write(const uint8_t *buffer, size_t size)
+size_t UARTDriver::write(const uint8_t *buffer, size_t size)
 {
     if (_uart_owner_pid != getpid()){
         return 0;
@@ -368,7 +368,7 @@ size_t F4BYUARTDriver::write(const uint8_t *buffer, size_t size)
 /*
   try writing n bytes, handling an unresponsive port
  */
-int F4BYUARTDriver::_write_fd(const uint8_t *buf, uint16_t n)
+int UARTDriver::_write_fd(const uint8_t *buf, uint16_t n)
 {
     int ret = 0;
 
@@ -458,7 +458,7 @@ int F4BYUARTDriver::_write_fd(const uint8_t *buf, uint16_t n)
 /*
   try reading n bytes, handling an unresponsive port
  */
-int F4BYUARTDriver::_read_fd(uint8_t *buf, uint16_t n)
+int UARTDriver::_read_fd(uint8_t *buf, uint16_t n)
 {
     int ret = 0;
 
@@ -486,7 +486,7 @@ int F4BYUARTDriver::_read_fd(uint8_t *buf, uint16_t n)
   1kHz in the timer thread. Doing it this way reduces the system call
   overhead in the main task enormously.
  */
-void F4BYUARTDriver::_timer_tick(void)
+void UARTDriver::_timer_tick(void)
 {
     uint16_t n;
 

@@ -9,7 +9,7 @@
 
 namespace F4BY {
 
-class F4BYRCOutput : public AP_HAL::RCOutput 
+class RCOutput : public AP_HAL::RCOutput 
 {
 public:
     void     init() override;

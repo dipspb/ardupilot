@@ -28,9 +28,9 @@ private:
     static void shell_thread(void *arg);
 };
 
-class F4BYUtil : public AP_HAL::Util {
+class Util : public AP_HAL::Util {
 public:
-    F4BYUtil(void);
+    Util(void);
     bool run_debug_shell(AP_HAL::BetterStream *stream);
 
     enum safety_state safety_switch_state(void);

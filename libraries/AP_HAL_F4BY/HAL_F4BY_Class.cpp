@@ -34,12 +34,12 @@ static Empty::SPIDeviceManager spiDeviceManager;
 //static Empty::GPIO gpioDriver;
 
 static F4BYScheduler schedulerInstance;
-static F4BYStorage storageDriver;
-static F4BYRCInput rcinDriver;
-static F4BYRCOutput rcoutDriver;
-static F4BYAnalogIn analogIn;
-static F4BYUtil utilInstance;
-static F4BYGPIO gpioDriver;
+static Storage storageDriver;
+static RCInput rcinDriver;
+static RCOutput rcoutDriver;
+static AnalogIn analogIn;
+static Util utilInstance;
+static GPIO gpioDriver;
 
 static F4BY::I2CDeviceManager i2c_mgr_instance;
 
@@ -51,12 +51,12 @@ static F4BY::I2CDeviceManager i2c_mgr_instance;
 #define UARTF_DEFAULT_DEVICE "/dev/null"
 
 // 3 UART drivers, for GPS plus two mavlink-enabled devices
-static F4BYUARTDriver uartADriver(UARTA_DEFAULT_DEVICE, "APM_uartA");
-static F4BYUARTDriver uartBDriver(UARTB_DEFAULT_DEVICE, "APM_uartB");
-static F4BYUARTDriver uartCDriver(UARTC_DEFAULT_DEVICE, "APM_uartC");
-static F4BYUARTDriver uartDDriver(UARTD_DEFAULT_DEVICE, "APM_uartD");
-static F4BYUARTDriver uartEDriver(UARTE_DEFAULT_DEVICE, "APM_uartE");
-static F4BYUARTDriver uartFDriver(UARTF_DEFAULT_DEVICE, "APM_uartF");
+static UARTDriver uartADriver(UARTA_DEFAULT_DEVICE, "APM_uartA");
+static UARTDriver uartBDriver(UARTB_DEFAULT_DEVICE, "APM_uartB");
+static UARTDriver uartCDriver(UARTC_DEFAULT_DEVICE, "APM_uartC");
+static UARTDriver uartDDriver(UARTD_DEFAULT_DEVICE, "APM_uartD");
+static UARTDriver uartEDriver(UARTE_DEFAULT_DEVICE, "APM_uartE");
+static UARTDriver uartFDriver(UARTF_DEFAULT_DEVICE, "APM_uartF");
 
 HAL_F4BY::HAL_F4BY() :
     AP_HAL::HAL(
