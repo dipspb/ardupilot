@@ -68,7 +68,7 @@ public:
         /* Not implemented yet */
         return false;
     }
-    
+
     AP_HAL::Semaphore* get_semaphore() override { return &semaphore; }
 
 private:

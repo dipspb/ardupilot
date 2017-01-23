@@ -273,7 +273,7 @@ void GPIO::toggle(uint8_t pin)
 
 /* Alternative interface: */
 AP_HAL::DigitalSource* GPIO::channel(uint16_t n) {
-    return new F4BYDigitalSource(0);
+    return new DigitalSource(0);
 }
 
 /* Interrupt interface: */
@@ -297,22 +297,22 @@ bool GPIO::usb_connected(void)
 }
 
 
-F4BYDigitalSource::F4BYDigitalSource(uint8_t v) :
+DigitalSource::DigitalSource(uint8_t v) :
     _v(v)
 {}
 
-void F4BYDigitalSource::mode(uint8_t output)
+void DigitalSource::mode(uint8_t output)
 {}
 
-uint8_t F4BYDigitalSource::read() {
+uint8_t DigitalSource::read() {
     return _v;
 }
 
-void F4BYDigitalSource::write(uint8_t value) {
+void DigitalSource::write(uint8_t value) {
     _v = value;
 }
 
-void F4BYDigitalSource::toggle() {
+void DigitalSource::toggle() {
     _v = !_v;
 }
 

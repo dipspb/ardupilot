@@ -57,9 +57,9 @@ private:
     bool _usb_connected = false;
 };
 
-class F4BYDigitalSource : public AP_HAL::DigitalSource {
+class DigitalSource : public AP_HAL::DigitalSource {
 public:
-    F4BYDigitalSource(uint8_t v);
+    DigitalSource(uint8_t v);
     void    mode(uint8_t output);
     uint8_t read();
     void    write(uint8_t value);
