@@ -31,7 +31,7 @@ using namespace F4BY;
 
 extern const AP_HAL::HAL& hal;
 
-F4BYStorage::F4BYStorage(void) :
+Storage::Storage(void) :
     _fd(-1),
     _dirty_mask(0),
     _perf_storage(perf_alloc(PC_ELAPSED, "APM_storage")),
@@ -42,7 +42,7 @@ F4BYStorage::F4BYStorage(void) :
 /*
   get signature from bytes at offset MTD_SIGNATURE_OFFSET
  */
-uint32_t F4BYStorage::_mtd_signature(void)
+uint32_t Storage::_mtd_signature(void)
 {
     int mtd_fd = open(MTD_PARAMS_FILE, O_RDONLY);
     if (mtd_fd == -1) {
@@ -64,7 +64,7 @@ uint32_t F4BYStorage::_mtd_signature(void)
 /*
   put signature bytes at offset MTD_SIGNATURE_OFFSET
  */
-void F4BYStorage::_mtd_write_signature(void)
+void Storage::_mtd_write_signature(void)
 {
     int mtd_fd = open(MTD_PARAMS_FILE, O_WRONLY);
     if (mtd_fd == -1) {
@@ -85,7 +85,7 @@ void F4BYStorage::_mtd_write_signature(void)
 /*
   upgrade from microSD to MTD (FRAM)
  */
-void F4BYStorage::_upgrade_to_mtd(void)
+void Storage::_upgrade_to_mtd(void)
 {
     // the MTD is completely uninitialised - try to get a
     // copy from OLD_STORAGE_FILE
@@ -122,7 +122,7 @@ void F4BYStorage::_upgrade_to_mtd(void)
 }
 
 
-void F4BYStorage::_storage_open(void)
+void Storage::_storage_open(void)
 {
 	if (_initialised) {
 		return;
@@ -192,7 +192,7 @@ void F4BYStorage::_storage_open(void)
   result is that a line is written more than once, but it won't result
   in a line not being written.
  */
-void F4BYStorage::_mark_dirty(uint16_t loc, uint16_t length)
+void Storage::_mark_dirty(uint16_t loc, uint16_t length)
 {
     uint16_t end = loc + length;
     for (uint8_t line=loc>>F4BY_STORAGE_LINE_SHIFT;
@@ -202,7 +202,7 @@ void F4BYStorage::_mark_dirty(uint16_t loc, uint16_t length)
     }
 }
 
-void F4BYStorage::read_block(void *dst, uint16_t loc, size_t n)
+void Storage::read_block(void *dst, uint16_t loc, size_t n)
 {
 	if (loc >= sizeof(_buffer)-(n-1)) {
 		return;
@@ -211,7 +211,7 @@ void F4BYStorage::read_block(void *dst, uint16_t loc, size_t n)
 	memcpy(dst, &_buffer[loc], n);
 }
 
-void F4BYStorage::write_block(uint16_t loc, const void *src, size_t n)
+void Storage::write_block(uint16_t loc, const void *src, size_t n)
 {
 	if (loc >= sizeof(_buffer)-(n-1)) {
 		return;
@@ -223,7 +223,7 @@ void F4BYStorage::write_block(uint16_t loc, const void *src, size_t n)
 	}
 }
 
-void F4BYStorage::bus_lock(bool lock)
+void Storage::bus_lock(bool lock)
 {
 #if defined (CONFIG_ARCH_BOARD_PX4FMU_V4)
     /*
@@ -243,7 +243,7 @@ void F4BYStorage::bus_lock(bool lock)
 #endif
 }
 
-void F4BYStorage::_timer_tick(void)
+void Storage::_timer_tick(void)
 {
 	if (!_initialised || _dirty_mask == 0) {
 		return;

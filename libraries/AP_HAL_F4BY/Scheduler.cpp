@@ -256,7 +256,7 @@ void F4BYScheduler::_run_timers(bool called_from_timer_thread)
     }
 
     // process analog input
-    ((F4BYAnalogIn *)hal.analogin)->_timer_tick();
+    ((AnalogIn *)hal.analogin)->_timer_tick();
 
     _in_timer_proc = false;
 }
@@ -280,10 +280,10 @@ void *F4BYScheduler::_timer_thread(void *arg)
         perf_end(sched->_perf_timers);
 
         // process any pending RC output requests
-        ((F4BYRCOutput *)hal.rcout)->_timer_tick();
+        ((RCOutput *)hal.rcout)->_timer_tick();
 
         // process any pending RC input requests
-        ((F4BYRCInput *)hal.rcin)->_timer_tick();
+        ((RCInput *)hal.rcin)->_timer_tick();
 
         if (f4by_ran_overtime && AP_HAL::millis() - last_ran_overtime > 2000) {
             last_ran_overtime = AP_HAL::millis();
@@ -326,12 +326,12 @@ void *F4BYScheduler::_uart_thread(void *arg)
         sched->delay_microseconds_semaphore(1000);
 
         // process any pending serial bytes
-        ((F4BYUARTDriver *)hal.uartA)->_timer_tick();
-        ((F4BYUARTDriver *)hal.uartB)->_timer_tick();
-        ((F4BYUARTDriver *)hal.uartC)->_timer_tick();
-        ((F4BYUARTDriver *)hal.uartD)->_timer_tick();
-        ((F4BYUARTDriver *)hal.uartE)->_timer_tick();
-        ((F4BYUARTDriver *)hal.uartF)->_timer_tick();
+        ((UARTDriver *)hal.uartA)->_timer_tick();
+        ((UARTDriver *)hal.uartB)->_timer_tick();
+        ((UARTDriver *)hal.uartC)->_timer_tick();
+        ((UARTDriver *)hal.uartD)->_timer_tick();
+        ((UARTDriver *)hal.uartE)->_timer_tick();
+        ((UARTDriver *)hal.uartF)->_timer_tick();
     }
     return NULL;
 }
@@ -366,7 +366,7 @@ void *F4BYScheduler::_storage_thread(void *arg)
 
         // process any pending storage writes
         perf_begin(sched->_perf_storage_timer);
-        ((F4BYStorage *)hal.storage)->_timer_tick();
+        ((Storage *)hal.storage)->_timer_tick();
         perf_end(sched->_perf_storage_timer);
     }
     return NULL;

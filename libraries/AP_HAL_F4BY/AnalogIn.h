@@ -18,10 +18,12 @@
 #define F4BY_ANALOG_ORB_SERVO_VRSSI_PIN         103
 #endif
 
-class F4BY::F4BYAnalogSource : public AP_HAL::AnalogSource {
+namespace F4BY {
+
+class AnalogSource : public AP_HAL::AnalogSource {
 public:
-    friend class F4BY::F4BYAnalogIn;
-    F4BYAnalogSource(int16_t pin, float initial_value);
+    friend class AnalogIn;
+    AnalogSource(int16_t pin, float initial_value);
     float read_average();
     float read_latest();
     void set_pin(uint8_t p);
@@ -50,9 +52,9 @@ private:
     float _pin_scaler();
 };
 
-class F4BY::F4BYAnalogIn : public AP_HAL::AnalogIn {
+class AnalogIn : public AP_HAL::AnalogIn {
 public:
-    F4BYAnalogIn();
+    AnalogIn();
     void init();
     AP_HAL::AnalogSource* channel(int16_t pin);
     void _timer_tick(void);
@@ -67,7 +69,7 @@ private:
     int _system_power_handle;
     uint64_t _battery_timestamp;
     uint64_t _servorail_timestamp;
-    F4BY::F4BYAnalogSource* _channels[F4BY_ANALOG_MAX_CHANNELS];
+    F4BY::AnalogSource* _channels[F4BY_ANALOG_MAX_CHANNELS];
 
     // what pin is currently held low to stop a sonar from reading
     uint8_t _current_stop_pin_i;
@@ -80,3 +82,5 @@ private:
 
     void next_stop_pin(void);
 };
+
+}

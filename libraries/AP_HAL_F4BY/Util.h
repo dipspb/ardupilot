@@ -1,10 +1,11 @@
 #pragma once
 
 #include <AP_HAL/AP_HAL.h>
-#include "AP_HAL_F4BY_Namespace.h"
 #include "Semaphores.h"
 
-class F4BY::NSHShellStream : public AP_HAL::Stream {
+namespace F4BY {
+
+class NSHShellStream : public AP_HAL::Stream {
 public:
     size_t write(uint8_t);
     size_t write(const uint8_t *buffer, size_t size);
@@ -27,9 +28,9 @@ private:
     static void shell_thread(void *arg);
 };
 
-class F4BY::F4BYUtil : public AP_HAL::Util {
+class Util : public AP_HAL::Util {
 public:
-    F4BYUtil(void);
+    Util(void);
     bool run_debug_shell(AP_HAL::BetterStream *stream);
 
     enum safety_state safety_switch_state(void);
@@ -74,3 +75,5 @@ private:
         int fd = -1;
     } _heater;
 };
+
+}

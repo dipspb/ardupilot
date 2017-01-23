@@ -26,10 +26,10 @@ extern const AP_HAL::HAL& hal;
 
 using namespace F4BY;
 
-F4BYGPIO::F4BYGPIO()
+GPIO::GPIO()
 {}
 
-void F4BYGPIO::init()
+void GPIO::init()
 {
     _led_fd = open(LED0_DEVICE_PATH, O_RDWR);
     if (_led_fd == -1) {
@@ -53,7 +53,7 @@ void F4BYGPIO::init()
     }
 }
 
-void F4BYGPIO::pinMode(uint8_t pin, uint8_t output)
+void GPIO::pinMode(uint8_t pin, uint8_t output)
 {
     switch (pin) {
     case F4BY_GPIO_D1_PIN:
@@ -74,7 +74,7 @@ void F4BYGPIO::pinMode(uint8_t pin, uint8_t output)
     }
 }
 
-int8_t F4BYGPIO::analogPinToDigitalPin(uint8_t pin)
+int8_t GPIO::analogPinToDigitalPin(uint8_t pin)
 {
     switch (pin) {
     default:
@@ -85,7 +85,7 @@ int8_t F4BYGPIO::analogPinToDigitalPin(uint8_t pin)
 }
 
 
-uint8_t F4BYGPIO::read(uint8_t pin) {
+uint8_t GPIO::read(uint8_t pin) {
 
     switch (pin) {
 
@@ -170,7 +170,7 @@ uint8_t F4BYGPIO::read(uint8_t pin) {
     return LOW;
 }
 
-void F4BYGPIO::write(uint8_t pin, uint8_t value)
+void GPIO::write(uint8_t pin, uint8_t value)
 {
     switch (pin) {
 
@@ -266,18 +266,18 @@ void F4BYGPIO::write(uint8_t pin, uint8_t value)
     }
 }
 
-void F4BYGPIO::toggle(uint8_t pin)
+void GPIO::toggle(uint8_t pin)
 {
     write(pin, !read(pin));
 }
 
 /* Alternative interface: */
-AP_HAL::DigitalSource* F4BYGPIO::channel(uint16_t n) {
-    return new F4BYDigitalSource(0);
+AP_HAL::DigitalSource* GPIO::channel(uint16_t n) {
+    return new DigitalSource(0);
 }
 
 /* Interrupt interface: */
-bool F4BYGPIO::attach_interrupt(uint8_t interrupt_num, AP_HAL::Proc p, uint8_t mode)
+bool GPIO::attach_interrupt(uint8_t interrupt_num, AP_HAL::Proc p, uint8_t mode)
 {
     return true;
 }
@@ -285,7 +285,7 @@ bool F4BYGPIO::attach_interrupt(uint8_t interrupt_num, AP_HAL::Proc p, uint8_t m
 /*
   return true when USB connected
  */
-bool F4BYGPIO::usb_connected(void)
+bool GPIO::usb_connected(void)
 {
     /*
       we use a combination of voltage on the USB connector and the
@@ -297,22 +297,22 @@ bool F4BYGPIO::usb_connected(void)
 }
 
 
-F4BYDigitalSource::F4BYDigitalSource(uint8_t v) :
+DigitalSource::DigitalSource(uint8_t v) :
     _v(v)
 {}
 
-void F4BYDigitalSource::mode(uint8_t output)
+void DigitalSource::mode(uint8_t output)
 {}
 
-uint8_t F4BYDigitalSource::read() {
+uint8_t DigitalSource::read() {
     return _v;
 }
 
-void F4BYDigitalSource::write(uint8_t value) {
+void DigitalSource::write(uint8_t value) {
     _v = value;
 }
 
-void F4BYDigitalSource::toggle() {
+void DigitalSource::toggle() {
     _v = !_v;
 }
 

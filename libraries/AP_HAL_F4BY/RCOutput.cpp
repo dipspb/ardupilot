@@ -26,7 +26,7 @@ using namespace F4BY;
  */
 #define RCOUT_DEBUG_LATENCY 0
 
-void F4BYRCOutput::init()
+void RCOutput::init()
 {
     _perf_rcout = perf_alloc(PC_ELAPSED, "APM_rcout");
     _pwm_fd = open(PWM_OUTPUT0_DEVICE_PATH, O_RDWR);
@@ -76,7 +76,7 @@ void F4BYRCOutput::init()
 }
 
 
-void F4BYRCOutput::_init_alt_channels(void)
+void RCOutput::_init_alt_channels(void)
 {
     if (_alt_fd == -1) {
         return;
@@ -97,7 +97,7 @@ void F4BYRCOutput::_init_alt_channels(void)
 /*
   set output frequency on outputs associated with fd
  */
-void F4BYRCOutput::set_freq_fd(int fd, uint32_t chmask, uint16_t freq_hz)
+void RCOutput::set_freq_fd(int fd, uint32_t chmask, uint16_t freq_hz)
 {
     // we can't set this per channel
     if (freq_hz > 50 || freq_hz == 1) {
@@ -163,7 +163,7 @@ void F4BYRCOutput::set_freq_fd(int fd, uint32_t chmask, uint16_t freq_hz)
 /*
   set output frequency
  */
-void F4BYRCOutput::set_freq(uint32_t chmask, uint16_t freq_hz)
+void RCOutput::set_freq(uint32_t chmask, uint16_t freq_hz)
 {
     if (freq_hz > 50 && _output_mode == MODE_PWM_ONESHOT) {
         // rate is irrelevent in oneshot
@@ -195,7 +195,7 @@ void F4BYRCOutput::set_freq(uint32_t chmask, uint16_t freq_hz)
     }
 }
 
-uint16_t F4BYRCOutput::get_freq(uint8_t ch)
+uint16_t RCOutput::get_freq(uint8_t ch)
 {
     if (_rate_mask & (1U<<ch)) {
         return _freq_hz;
@@ -203,7 +203,7 @@ uint16_t F4BYRCOutput::get_freq(uint8_t ch)
     return 50;
 }
 
-void F4BYRCOutput::enable_ch(uint8_t ch)
+void RCOutput::enable_ch(uint8_t ch)
 {
     if (ch >= F4BY_NUM_OUTPUT_CHANNELS) {
         return;
@@ -220,7 +220,7 @@ void F4BYRCOutput::enable_ch(uint8_t ch)
     }
 }
 
-void F4BYRCOutput::disable_ch(uint8_t ch)
+void RCOutput::disable_ch(uint8_t ch)
 {
     if (ch >= F4BY_NUM_OUTPUT_CHANNELS) {
         return;
@@ -230,7 +230,7 @@ void F4BYRCOutput::disable_ch(uint8_t ch)
     _period[ch] = PWM_IGNORE_THIS_CHANNEL;
 }
 
-void F4BYRCOutput::set_safety_pwm(uint32_t chmask, uint16_t period_us)
+void RCOutput::set_safety_pwm(uint32_t chmask, uint16_t period_us)
 {
     struct pwm_output_values pwm_values;
     memset(&pwm_values, 0, sizeof(pwm_values));
@@ -246,7 +246,7 @@ void F4BYRCOutput::set_safety_pwm(uint32_t chmask, uint16_t period_us)
     }
 }
 
-void F4BYRCOutput::set_failsafe_pwm(uint32_t chmask, uint16_t period_us)
+void RCOutput::set_failsafe_pwm(uint32_t chmask, uint16_t period_us)
 {
     struct pwm_output_values pwm_values;
     memset(&pwm_values, 0, sizeof(pwm_values));
@@ -262,20 +262,20 @@ void F4BYRCOutput::set_failsafe_pwm(uint32_t chmask, uint16_t period_us)
     }
 }
 
-bool F4BYRCOutput::force_safety_on(void)
+bool RCOutput::force_safety_on(void)
 {
     _safety_state_request = AP_HAL::Util::SAFETY_DISARMED;
     _safety_state_request_last_ms = 1;
     return true;
 }
 
-void F4BYRCOutput::force_safety_off(void)
+void RCOutput::force_safety_off(void)
 {
     _safety_state_request = AP_HAL::Util::SAFETY_ARMED;
     _safety_state_request_last_ms = 1;
 }
 
-void F4BYRCOutput::force_safety_pending_requests(void)
+void RCOutput::force_safety_pending_requests(void)
 {
     // check if there is a pending saftey_state change. If so (timer != 0) then set it.
     if (_safety_state_request_last_ms != 0 &&
@@ -295,7 +295,7 @@ void F4BYRCOutput::force_safety_pending_requests(void)
     }
 }
 
-void F4BYRCOutput::force_safety_no_wait(void)
+void RCOutput::force_safety_no_wait(void)
 {
     if (_safety_state_request_last_ms != 0) {
         _safety_state_request_last_ms = 1;
@@ -303,7 +303,7 @@ void F4BYRCOutput::force_safety_no_wait(void)
     }
 }
 
-void F4BYRCOutput::write(uint8_t ch, uint16_t period_us)
+void RCOutput::write(uint8_t ch, uint16_t period_us)
 {
     if (ch >= F4BY_NUM_OUTPUT_CHANNELS) {
         return;
@@ -327,7 +327,7 @@ void F4BYRCOutput::write(uint8_t ch, uint16_t period_us)
     }
 }
 
-uint16_t F4BYRCOutput::read(uint8_t ch)
+uint16_t RCOutput::read(uint8_t ch)
 {
     if (ch >= F4BY_NUM_OUTPUT_CHANNELS) {
         return 0;
@@ -345,14 +345,14 @@ uint16_t F4BYRCOutput::read(uint8_t ch)
     return _period[ch];
 }
 
-void F4BYRCOutput::read(uint16_t* period_us, uint8_t len)
+void RCOutput::read(uint16_t* period_us, uint8_t len)
 {
     for (uint8_t i=0; i<len; i++) {
         period_us[i] = read(i);
     }
 }
 
-uint16_t F4BYRCOutput::read_last_sent(uint8_t ch)
+uint16_t RCOutput::read_last_sent(uint8_t ch)
 {
     if (ch >= F4BY_NUM_OUTPUT_CHANNELS) {
         return 0;
@@ -361,7 +361,7 @@ uint16_t F4BYRCOutput::read_last_sent(uint8_t ch)
     return _period[ch];
 }
 
-void F4BYRCOutput::read_last_sent(uint16_t* period_us, uint8_t len)
+void RCOutput::read_last_sent(uint16_t* period_us, uint8_t len)
 {
     for (uint8_t i=0; i<len; i++) {
         period_us[i] = read_last_sent(i);
@@ -371,7 +371,7 @@ void F4BYRCOutput::read_last_sent(uint16_t* period_us, uint8_t len)
 /*
   update actuator armed state
  */
-void F4BYRCOutput::_arm_actuators(bool arm)
+void RCOutput::_arm_actuators(bool arm)
 {
     if (_armed.armed == arm) {
         // already armed;
@@ -394,7 +394,7 @@ void F4BYRCOutput::_arm_actuators(bool arm)
 /*
   publish new outputs to the actuator_direct topic
  */
-void F4BYRCOutput::_publish_actuators(void)
+void RCOutput::_publish_actuators(void)
 {
 	struct actuator_direct_s actuators;
 
@@ -436,7 +436,7 @@ void F4BYRCOutput::_publish_actuators(void)
     }
 }
 
-void F4BYRCOutput::_send_outputs(void)
+void RCOutput::_send_outputs(void)
 {
     uint32_t now = AP_HAL::micros();
 
@@ -514,7 +514,7 @@ update_pwm:
 
 }
 
-void F4BYRCOutput::cork()
+void RCOutput::cork()
 {
 #if RCOUT_DEBUG_LATENCY
     hal.gpio->pinMode(55, HAL_GPIO_OUTPUT);
@@ -523,7 +523,7 @@ void F4BYRCOutput::cork()
     _corking = true;
 }
 
-void F4BYRCOutput::push()
+void RCOutput::push()
 {
 #if RCOUT_DEBUG_LATENCY
     hal.gpio->pinMode(55, HAL_GPIO_OUTPUT);
@@ -536,7 +536,7 @@ void F4BYRCOutput::push()
     }
 }
 
-void F4BYRCOutput::_timer_tick(void)
+void RCOutput::_timer_tick(void)
 {
     if (_output_mode != MODE_PWM_ONESHOT) {
         /* in oneshot mode the timer does nothing as the outputs are
@@ -550,7 +550,7 @@ void F4BYRCOutput::_timer_tick(void)
 /*
   enable sbus output
  */
-bool F4BYRCOutput::enable_sbus_out(uint16_t rate_hz)
+bool RCOutput::enable_sbus_out(uint16_t rate_hz)
 {
     int fd = open("/dev/px4io", 0);
     if (fd == -1) {
@@ -574,7 +574,7 @@ bool F4BYRCOutput::enable_sbus_out(uint16_t rate_hz)
 /*
   setup output mode
  */
-void F4BYRCOutput::set_output_mode(enum output_mode mode)
+void RCOutput::set_output_mode(enum output_mode mode)
 {
     if (_output_mode == mode) {
         // no change

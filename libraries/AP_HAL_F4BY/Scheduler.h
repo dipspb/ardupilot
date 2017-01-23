@@ -2,7 +2,6 @@
 
 #include <AP_HAL/AP_HAL.h>
 #if CONFIG_HAL_BOARD == HAL_BOARD_F4BY
-#include "AP_HAL_F4BY_Namespace.h"
 #include <sys/time.h>
 #include <signal.h>
 #include <pthread.h>
@@ -38,7 +37,9 @@
 #define APM_MAIN_THREAD_STACK_SIZE 8192
 
 /* Scheduler implementation: */
-class F4BY::F4BYScheduler : public AP_HAL::Scheduler {
+namespace F4BY {
+
+class F4BYScheduler : public AP_HAL::Scheduler {
 public:
     F4BYScheduler();
     /* AP_HAL::Scheduler methods */
@@ -99,4 +100,7 @@ private:
     perf_counter_t  _perf_storage_timer;
     perf_counter_t  _perf_delay;
 };
+
+}
+
 #endif

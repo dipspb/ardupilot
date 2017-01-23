@@ -51,7 +51,7 @@ static const struct {
 
 using namespace F4BY;
 
-F4BYAnalogSource::F4BYAnalogSource(int16_t pin, float initial_value) :
+AnalogSource::AnalogSource(int16_t pin, float initial_value) :
 	_pin(pin),
     _stop_pin(-1),
     _settle_time_ms(0),
@@ -69,12 +69,12 @@ F4BYAnalogSource::F4BYAnalogSource(int16_t pin, float initial_value) :
 #endif
 }
 
-void F4BYAnalogSource::set_stop_pin(uint8_t p)
+void AnalogSource::set_stop_pin(uint8_t p)
 {
     _stop_pin = p;
 }
 
-float F4BYAnalogSource::read_average()
+float AnalogSource::read_average()
 {
     if (_sum_count == 0) {
         return _value;
@@ -89,7 +89,7 @@ float F4BYAnalogSource::read_average()
     return _value;
 }
 
-float F4BYAnalogSource::read_latest()
+float AnalogSource::read_latest()
 {
     return _latest_value;
 }
@@ -97,7 +97,7 @@ float F4BYAnalogSource::read_latest()
 /*
   return scaling from ADC count to Volts
  */
-float F4BYAnalogSource::_pin_scaler(void)
+float AnalogSource::_pin_scaler(void)
 {
     float scaling = F4BY_VOLTAGE_SCALING;
     uint8_t num_scalings = ARRAY_SIZE(pin_scaling);
@@ -113,7 +113,7 @@ float F4BYAnalogSource::_pin_scaler(void)
 /*
   return voltage in Volts
  */
-float F4BYAnalogSource::voltage_average()
+float AnalogSource::voltage_average()
 {
     return _pin_scaler() * read_average();
 }
@@ -122,7 +122,7 @@ float F4BYAnalogSource::voltage_average()
   return voltage in Volts, assuming a ratiometric sensor powered by
   the 5V rail
  */
-float F4BYAnalogSource::voltage_average_ratiometric()
+float AnalogSource::voltage_average_ratiometric()
 {
     voltage_average();
     return _pin_scaler() * _value_ratiometric;
@@ -131,12 +131,12 @@ float F4BYAnalogSource::voltage_average_ratiometric()
 /*
   return voltage in Volts
  */
-float F4BYAnalogSource::voltage_latest()
+float AnalogSource::voltage_latest()
 {
     return _pin_scaler() * read_latest();
 }
 
-void F4BYAnalogSource::set_pin(uint8_t pin)
+void AnalogSource::set_pin(uint8_t pin)
 {
     if (_pin == pin) {
         return;
@@ -155,7 +155,7 @@ void F4BYAnalogSource::set_pin(uint8_t pin)
 /*
   apply a reading in ADC counts
  */
-void F4BYAnalogSource::_add_value(float v, float vcc5V)
+void AnalogSource::_add_value(float v, float vcc5V)
 {
     _latest_value = v;
     _sum_value += v;
@@ -175,14 +175,14 @@ void F4BYAnalogSource::_add_value(float v, float vcc5V)
 }
 
 
-F4BYAnalogIn::F4BYAnalogIn() :
+AnalogIn::AnalogIn() :
     _current_stop_pin_i(0),
 	_board_voltage(0),
     _servorail_voltage(0),
     _power_flags(0)
 {}
 
-void F4BYAnalogIn::init()
+void AnalogIn::init()
 {
 	_adc_fd = open(ADC0_DEVICE_PATH, O_RDONLY | O_NONBLOCK);
     if (_adc_fd == -1) {
@@ -197,14 +197,14 @@ void F4BYAnalogIn::init()
 /*
   move to the next stop pin
  */
-void F4BYAnalogIn::next_stop_pin(void)
+void AnalogIn::next_stop_pin(void)
 {
     // find the next stop pin. We start one past the current stop pin
     // and wrap completely, so we do the right thing is there is only
     // one stop pin
     for (uint8_t i=1; i <= F4BY_ANALOG_MAX_CHANNELS; i++) {
         uint8_t idx = (_current_stop_pin_i + i) % F4BY_ANALOG_MAX_CHANNELS;
-        F4BY::F4BYAnalogSource *c = _channels[idx];
+        F4BY::AnalogSource *c = _channels[idx];
         if (c && c->_stop_pin != -1) {
             // found another stop pin
             _stop_pin_change_time = AP_HAL::millis();
@@ -216,7 +216,7 @@ void F4BYAnalogIn::next_stop_pin(void)
 
             // set all others low
             for (uint8_t j=0; j<F4BY_ANALOG_MAX_CHANNELS; j++) {
-                F4BY::F4BYAnalogSource *c2 = _channels[j];
+                F4BY::AnalogSource *c2 = _channels[j];
                 if (c2 && c2->_stop_pin != -1 && j != idx) {
                     hal.gpio->pinMode(c2->_stop_pin, 1);
                     hal.gpio->write(c2->_stop_pin, 0);
@@ -230,7 +230,7 @@ void F4BYAnalogIn::next_stop_pin(void)
 /*
   called at 1kHz
  */
-void F4BYAnalogIn::_timer_tick(void)
+void AnalogIn::_timer_tick(void)
 {
     // read adc at 100Hz
     uint32_t now = AP_HAL::micros();
@@ -267,7 +267,7 @@ void F4BYAnalogIn::_timer_tick(void)
                   (unsigned)buf_adc[i].am_channel,
                   (unsigned)buf_adc[i].am_data);
             for (uint8_t j=0; j<F4BY_ANALOG_MAX_CHANNELS; j++) {
-                F4BY::F4BYAnalogSource *c = _channels[j];
+                F4BY::AnalogSource *c = _channels[j];
                 if (c != NULL && buf_adc[i].am_channel == c->_pin) {
                     // add a value if either there is no stop pin, or
                     // the stop pin has been settling for enough time
@@ -294,7 +294,7 @@ void F4BYAnalogIn::_timer_tick(void)
             if (battery.timestamp != _battery_timestamp) {
                 _battery_timestamp = battery.timestamp;
                 for (uint8_t j=0; j<F4BY_ANALOG_MAX_CHANNELS; j++) {
-                    F4BY::F4BYAnalogSource *c = _channels[j];
+                    F4BY::AnalogSource *c = _channels[j];
                     if (c == NULL) continue;
                     if (c->_pin == F4BY_ANALOG_ORB_BATTERY_VOLTAGE_PIN) {
                         c->_add_value(battery.voltage_v / F4BY_VOLTAGE_SCALING, 0);
@@ -321,7 +321,7 @@ void F4BYAnalogIn::_timer_tick(void)
                 _servorail_timestamp = servorail.timestamp;
                 _servorail_voltage = servorail.voltage_v;
                 for (uint8_t j=0; j<F4BY_ANALOG_MAX_CHANNELS; j++) {
-                    F4BY::F4BYAnalogSource *c = _channels[j];
+                    F4BY::AnalogSource *c = _channels[j];
                     if (c == NULL) continue;
                     if (c->_pin == F4BY_ANALOG_ORB_SERVO_VOLTAGE_PIN) {
                         c->_add_value(servorail.voltage_v / F4BY_VOLTAGE_SCALING, 0);
@@ -357,11 +357,11 @@ void F4BYAnalogIn::_timer_tick(void)
 
 }
 
-AP_HAL::AnalogSource* F4BYAnalogIn::channel(int16_t pin)
+AP_HAL::AnalogSource* AnalogIn::channel(int16_t pin)
 {
     for (uint8_t j=0; j<F4BY_ANALOG_MAX_CHANNELS; j++) {
         if (_channels[j] == NULL) {
-            _channels[j] = new F4BYAnalogSource(pin, 0.0f);
+            _channels[j] = new AnalogSource(pin, 0.0f);
             return _channels[j];
         }
     }
